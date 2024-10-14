@@ -11,10 +11,6 @@ export const mkDirSync = (folderPath: string) => {
     }
 }
 
-export const deleteFolder = (folderPath: string) => {
-    fs.rmSync(folderPath, { recursive: true });
-}
-
 export const writeStream = (filePath: string) => {
     const dirName = path.dirname(filePath);
     mkDirSync(dirName);
@@ -47,9 +43,6 @@ export const getAllFiles = (folderPath: string) => {
         // Else just push remain files to the filePath List
         if (fs.statSync(filePath).isDirectory()) {
             result = result.concat(getAllFiles(filePath));
-        }
-        else if (filePath.includes('.git')) {
-            console.log('Removed git file: ' + filePath);
         }
         else {
             result.push(filePath);

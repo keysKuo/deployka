@@ -1,8 +1,7 @@
 import { commandOptions, createClient } from 'redis';
-import { downloadFromS3, uploadFolderToS3 } from '../middlewares/aws.handler';
-import { buildProject } from '../middlewares/project.build'
-import { R2_BUCKET, ROOT_DIR } from '../constants';
-import path from 'path';
+import { downloadFromS3, uploadFolderToS3 } from './middlewares/aws.handler';
+import { buildProject } from './middlewares/project.build';
+import { OUTPUT_DIR, R2_BUCKET, ROOT_DIR } from './constants';
 const subscriber = createClient();
 subscriber.connect();
 
@@ -14,13 +13,13 @@ async function main () {
         console.log(storedId);
 
         // Download source code by its id from AWS S3
-        await downloadFromS3(R2_BUCKET, `output/${storedId}`);
+        await downloadFromS3(R2_BUCKET, `sources/${storedId}`);
 
         // Build the project in sight
-        await buildProject(path.posix.join(ROOT_DIR, `dist/output/${storedId}`));
+        await buildProject(`${OUTPUT_DIR}/${storedId}`);
 
         // Upload the built files back to AWS S3
-        await uploadFolderToS3(R2_BUCKET, `builds`, path.posix.join(ROOT_DIR, `dist/output/${storedId}/.next`) );
+        await uploadFolderToS3(R2_BUCKET, `builds`,`${OUTPUT_DIR}/${storedId}/.next`);
     }
 }
 
