@@ -38,6 +38,7 @@ export const buildProject = async (storedId: string, folderPath: string) => {
         const nginxConfPath = `${folderPath}/deployka-${storedId}.conf`;
         createNginxConf(`deployka-${storedId}.${DOMAIN}`, randomPort, nginxConfPath);
         await runCommand(`docker cp ${nginxConfPath} nginx:/etc/nginx/conf.d/deployka-${storedId}.conf`, folderPath);
+        await runCommand(`docker exec -it nginx nginx -s reload`, folderPath);
 
         console.log('🌐 Running the project...');
         await runCommand(`pm2 start npm --name 'deployka-${storedId}' -- start -- -p ${randomPort}`, folderPath);

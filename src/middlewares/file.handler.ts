@@ -48,9 +48,9 @@ export const getAllFiles = (folderPath: string) => {
         if (fs.statSync(filePath).isDirectory()) {
             result = result.concat(getAllFiles(filePath));
         }
-        else if (filePath.includes('.git')) {
-            console.log('Removed git file: ' + filePath);
-        }
+        // else if (filePath.includes('.git')) {
+        //     console.log('Removed git file: ' + filePath);
+        // }
         else {
             result.push(filePath);
         }
