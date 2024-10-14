@@ -38,7 +38,15 @@ services:
     image: redis:alpine
     container_name: redis
     ports:
-      - "6379:6379"  # Port Redis
+      - "6379:6379" 
+    networks:
+      - deployka_network
+
+  mongo:
+    image: mongo:latest
+    container_name: mongo
+    ports:
+      - "27017:27017"
     networks:
       - deployka_network
 
