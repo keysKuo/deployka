@@ -14,7 +14,7 @@ const dev: Config = {
 
 const production: Config = {
     port: 2024,
-    mongodbURL: process.env.MONGODB_URL || 'mongodb://127.0.0.1:27017/NewEzChatDev',
+    mongodbURL: process.env.MONGODB_URL || 'mongodb://mongodb:27017/NewEzChatDev',
     frontendURL: process.env.FRONTEND_URL,
     backendURL: process.env.BACKEND_URL
 }
