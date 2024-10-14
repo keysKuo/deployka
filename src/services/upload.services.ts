@@ -1,8 +1,14 @@
-import { BadRequestError } from "../middlewares/error.res";
 import { UploadRepository, UploadResponse } from "../repositories/upload.repo";
 import simpleGit from 'simple-git';
 import { generateId } from "../utils";
 import path from "path";
+import { uploadFolderToS3 } from "../middlewares/aws.handler";
+import { OUTPUT_DIR, ROOT_DIR } from "../constants";
+import { createClient } from 'redis';
+import { deleteFolder } from "../middlewares/file.handler";
+import { createSubDomain } from "../middlewares/cloudflare.handler";
+const publisher = createClient();
+publisher.connect();
 
 class UploadService implements UploadRepository {
 	private static instance: UploadService;
@@ -14,11 +20,18 @@ class UploadService implements UploadRepository {
 
     async upload(repoUrl: string): Promise<UploadResponse> {
         const uploadId = generateId(6);
-        const rootDir = process.cwd();
-        const outputFolder = path.join(rootDir, `dist/output/${uploadId}`);
+        const outputFolder = path.posix.join(OUTPUT_DIR, uploadId);
 
         try {
             await simpleGit().clone(repoUrl, outputFolder);
+
+            await uploadFolderToS3('deployka', 'sources', outputFolder);
+
+            await createSubDomain('deployka', uploadId);
+
+            deleteFolder(outputFolder);
+            publisher.lPush('build-queue', uploadId);
+
             return {
                 success: true,
                 uploadDir: outputFolder,

@@ -33,7 +33,11 @@
     "typescript": "^5.5.4"
   },
   "dependencies": {
+    "@aws-sdk/client-s3": "^3.670.0",
+    "@aws-sdk/lib-storage": "^3.670.0",
     "@types/mongoose": "^5.11.97",
+    "aws-sdk": "^2.1691.0",
+    "axios": "^1.7.7",
     "compression": "^1.7.4",
     "crypto": "^1.0.1",
     "dotenv": "^16.4.5",
@@ -43,6 +47,7 @@
     "mongoose": "^8.5.3",
     "morgan": "^1.10.0",
     "path": "^0.12.7",
+    "redis": "^4.7.0",
     "simple-git": "^3.27.0",
     "stripe": "^16.11.0"
   }

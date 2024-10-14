@@ -5,8 +5,6 @@ import { Request, Response, NextFunction } from 'express';
 import { JwtPayload } from "jsonwebtoken";
 import { Types } from "mongoose";
 import bcrypt from 'bcrypt';
-import fs from 'fs';
-import path from 'path';
 
 interface UserPayload extends JwtPayload {
 	userId: Types.ObjectId | null
@@ -64,31 +62,6 @@ export const hashedBcrypt = async (str: string): Promise<string> => {
 
 export const matchedBcrypt = async (str: string, hashed: string): Promise<boolean> => {
     return await bcrypt.compare(str, hashed);
-}
-
-/*  Get all folders and files in recursion */
-export const getAllFiles = (folderPath: string): string[] => {
-    let result: string[] = [];
-
-    // Read all files from given folder
-    const rootFolder = fs.readdirSync(folderPath)
-
-    // Loop through all files in the folder
-    rootFolder.forEach(file => {
-        // Join filePath with folderPath to get full path
-        const filePath = path.join(folderPath, file);
-
-        // If it's a folder -> concat the filePath List with recursion of children folder's files
-        // Else just push remain files to the filePath List
-        if (fs.statSync(filePath).isDirectory()) {
-            result = result.concat(getAllFiles(filePath));
-        }
-        else {
-            result.push(filePath);
-        }
-    })
-
-    return result;
 }
 
 export const generateId = (length: number): string => {
