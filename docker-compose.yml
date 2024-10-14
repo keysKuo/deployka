@@ -1,6 +1,14 @@
 version: '3'
 
 services:
+  mongo:
+    image: mongo:latest
+    container_name: mongo
+    ports:
+      - "27017:27017"
+    networks:
+      - deployka_network
+
   upload:
     build:
       context: ./
@@ -9,7 +17,7 @@ services:
     ports:
       - "2024:2024"
     depends_on:
-      - mongodb
+      - mongo
     networks:
       - deployka_network
     environment:
@@ -44,13 +52,7 @@ services:
     networks:
       - deployka_network
 
-  mongo:
-    image: mongo:latest
-    container_name: mongo
-    ports:
-      - "27017:27017"
-    networks:
-      - deployka_network
+
 
 networks:
   deployka_network:
