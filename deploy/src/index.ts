@@ -18,9 +18,9 @@ async function main () {
 
         // Build the project in sight
         await buildProject(storedId, `${OUTPUT_DIR}/${storedId}`);
-
+        
         // Upload the built files back to AWS S3
-        await uploadFolderToS3(R2_BUCKET, `builds`,`${OUTPUT_DIR}/${storedId}/.next`);
+        // await uploadFolderToS3(R2_BUCKET, `builds`,`${OUTPUT_DIR}/${storedId}/.next`);
     }
 }
 

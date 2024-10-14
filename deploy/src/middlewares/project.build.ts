@@ -1,6 +1,6 @@
 import { exec } from 'child_process';
 import fs from 'fs';
-import { DOMAIN } from '../constants';
+import { DOMAIN, SERVER_IP_ADDRESS } from '../constants';
 
 const runCommand = (command: string, workingDir: string) => {
     return new Promise((resolve, reject) => {
@@ -42,7 +42,7 @@ export const buildProject = async (storedId: string, folderPath: string) => {
         console.log('🌐 Running the project...');
         await runCommand(`pm2 start npm --name 'deployka-${storedId}' -- start -- -p ${randomPort}`, folderPath);
 
-        console.log('✔️ Project built successfully.');
+        console.log(`✔️ Your website started: https://deployka-${storedId}.${DOMAIN}`);
     } catch (error) {
         console.error('Error during the build process:', error);
     }
@@ -56,7 +56,7 @@ export const createNginxConf = (domain: string, port: number, filePath: string) 
         server_name ${domain};
 
         location / {
-            proxy_pass http://localhost:${port};
+            proxy_pass http://${SERVER_IP_ADDRESS}:${port};
             proxy_http_version 1.1;
             proxy_set_header Upgrade $http_upgrade;
             proxy_set_header Connection 'upgrade';
