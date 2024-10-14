@@ -8,7 +8,7 @@ import { createClient } from 'redis';
 import { deleteFolder } from "../middlewares/file.handler";
 import { createSubDomain } from "../middlewares/cloudflare.handler";
 const publisher = createClient({
-    url: 'redis://redis:6379'
+    url: 'redis://localhost:6379'
 });
 publisher.connect();
 
