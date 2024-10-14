@@ -37,10 +37,10 @@ export const buildProject = async (storedId: string, folderPath: string) => {
         const randomPort = Math.floor(Math.random() * 10000);
         const nginxConfPath = `${folderPath}/deployka-${storedId}.conf`;
         createNginxConf(`deployka-${storedId}.${DOMAIN}`, randomPort, nginxConfPath);
-        // await runCommand(`docker cp ${nginxConfPath} nginx:/etc/nginx/conf.d/deployka-${storedId}.conf`, folderPath);
+        await runCommand(`docker cp ${nginxConfPath} nginx:/etc/nginx/conf.d/deployka-${storedId}.conf`, folderPath);
 
         console.log('🌐 Running the project...');
-        await runCommand(`pm2 start next --name 'deployka-${storedId}' start -p ${randomPort}`, folderPath);
+        await runCommand(`pm2 start npm --name 'deployka-${storedId}' -- start -- -p ${randomPort}`, folderPath);
 
         console.log('✔️ Project built successfully.');
     } catch (error) {
