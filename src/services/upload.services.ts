@@ -7,7 +7,9 @@ import { OUTPUT_DIR, ROOT_DIR } from "../constants";
 import { createClient } from 'redis';
 import { deleteFolder } from "../middlewares/file.handler";
 import { createSubDomain } from "../middlewares/cloudflare.handler";
-const publisher = createClient();
+const publisher = createClient({
+    url: 'redis://redis:6379'
+});
 publisher.connect();
 
 class UploadService implements UploadRepository {
