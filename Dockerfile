@@ -1,5 +1,8 @@
 FROM node:20-alpine
 
+# Cài đặt curl
+RUN apt-get update && apt-get install -y curl
+
 WORKDIR /upload
 
 COPY package*.json ./
