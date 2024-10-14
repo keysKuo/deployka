@@ -16,8 +16,6 @@ services:
     container_name: deployka_upload
     ports:
       - "2024:2024"
-    depends_on:
-      - mongo
     networks:
       - deployka_network
     environment:
@@ -53,7 +51,6 @@ services:
       - deployka_network
 
 
-
 networks:
   deployka_network:
-    driver: host
+    driver: bridge
