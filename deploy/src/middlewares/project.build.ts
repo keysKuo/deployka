@@ -65,12 +65,6 @@ export const createNginxConf = (domain: string, port: number, filePath: string) 
             proxy_cache_bypass $http_upgrade;
         }
 
-        location /_next/static/ {
-            alias /var/www/monbeauty.org/.next/static/;
-            expires 1y;
-            access_log off;
-        }
-
         gzip on;
         gzip_types text/plain text/css application/json application/javascript text/xml application/xml application/xml+rss text/javascript;
         gzip_proxied any;
