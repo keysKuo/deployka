@@ -29,8 +29,6 @@ services:
       - CLOUDFLARE_ACCOUNT_ID=164d8bab583145e0bcef2c68e52c2ee7
       - DOMAIN=kryo.io.vn
       - SERVER_IP_ADDRESS=14.225.192.64
-    volumes:
-      - ./upload:/upload  # Mount volume để lưu trữ dữ liệu
     user: root  # Chạy container với quyền root
 
   nginx:
