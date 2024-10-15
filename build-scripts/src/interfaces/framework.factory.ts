@@ -110,7 +110,8 @@ export class NextJSFactory implements FrameworkFactory {
             await runCommand(this.config.buildCommand, folderPath);
 
             console.log('⚙️ Setting nginx config...');
-            const randomPort = Math.floor(Math.random() * 10000);
+            let randomPort = Math.floor(Math.random() * 10000);
+            if (randomPort < 1000)  randomPort *= 10
             const subdomain = `${projectName}-${storedId}`;
             const nginxConfPath = `${folderPath}/${subdomain}.conf`;
             await new NextJSNginxConfig(`${subdomain}.${DOMAIN}`, nginxConfPath, randomPort).writeConfig();
