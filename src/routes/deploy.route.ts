@@ -1,11 +1,12 @@
 import express from "express";
 import { catchAsync } from "../utils";
 import { verifyAuth } from "../middlewares/auth.verify";
-import UploadController from "../controllers/upload.controller";
+import DeployController from "../controllers/deploy.controller";
 const router = express.Router();
 
 
 // router.use(catchAsync(verifyAuth));
-router.post('/', catchAsync(UploadController.uploadRepo));
+router.post('/upload', catchAsync(DeployController.uploadRepo));
+router.post('/build', catchAsync(DeployController.buildProject));
 
 export default router;

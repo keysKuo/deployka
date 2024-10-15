@@ -1,3 +1,4 @@
+import axios from 'axios';
 import { exec } from 'child_process';
 import path from 'path';
 
@@ -31,9 +32,29 @@ export const buildProject = async (folderPath: string) => {
 
         console.log('🚀 Building the project...');
         await runCommand('npm run build', folderPath);
-        
+
         console.log('✔️ Project built successfully.');
     } catch (error) {
         console.error('Error during the build process:', error);
+    }
+};
+
+export const getRepositoryData = async (repoUrl: string) => {
+    // Phân tích URL để lấy owner và repo
+    const regex = /github\.com\/([^\/]+)\/([^\/]+)/;
+    const match = repoUrl.match(regex);
+    if (!match) {
+        return null;
+    }
+
+    const owner = match[1];
+    const repo = match[2].replace(".git","");
+
+    try {
+        const response = await axios.get(`https://api.github.com/repos/${owner}/${repo}`);
+        return response.data;
+    } catch (error) {
+        console.error('Error fetching repository data:', error);
+        return null;
     }
 };

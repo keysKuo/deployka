@@ -1,8 +1,9 @@
 import { exec } from 'child_process';
 import fs from 'fs';
 import { DOMAIN, SERVER_IP_ADDRESS } from '../constants';
+import { FrameworkConfig } from '../interfaces/framework.factory';
 
-const runCommand = (command: string, workingDir: string) => {
+export const runCommand = (command: string, workingDir: string) => {
     return new Promise((resolve, reject) => {
         const child = exec(command, { cwd: workingDir }, (error, stdout, stderr) => {
             if (error) {
@@ -25,25 +26,25 @@ const runCommand = (command: string, workingDir: string) => {
     })
 };
 
-export const buildProject = async (storedId: string, folderPath: string) => {
+export const buildProject = async (storedId: string, projectName: string, frameworkConf: FrameworkConfig, folderPath: string) => {
     try {
         console.log('📦 Installing dependencies...');
-        await runCommand('npm install', folderPath);
+        await runCommand(frameworkConf.installCommand, folderPath);
 
         console.log('🚀 Building the project...');
-        await runCommand('npm run build', folderPath);
+        await runCommand(frameworkConf.buildCommand, folderPath);
 
         console.log('⚙️ Setting nginx config...');
         const randomPort = Math.floor(Math.random() * 10000);
-        const nginxConfPath = `${folderPath}/deployka-${storedId}.conf`;
-        createNginxConf(`deployka-${storedId}.${DOMAIN}`, randomPort, nginxConfPath);
-        await runCommand(`docker cp ${nginxConfPath} nginx:/etc/nginx/conf.d/deployka-${storedId}.conf`, folderPath);
+        const nginxConfPath = `${folderPath}/${projectName}-${storedId}.conf`;
+        createNginxConf(`${projectName}-${storedId}.${DOMAIN}`, randomPort, nginxConfPath);
+        await runCommand(`docker cp ${nginxConfPath} nginx:/etc/nginx/conf.d/${projectName}-${storedId}.conf`, folderPath);
         await runCommand(`docker exec nginx nginx -s reload`, folderPath);
 
         console.log('🌐 Running the project...');
-        await runCommand(`pm2 start npm --name 'deployka-${storedId}' -- start -- -p ${randomPort}`, folderPath);
+        await runCommand(`pm2 start npm --name '${projectName}-${storedId}' -- start -- -p ${randomPort}`, folderPath);
 
-        console.log(`✔️ Your website started: https://deployka-${storedId}.${DOMAIN}`);
+        console.log(`✔️ Your website started: https://${projectName}-${storedId}.${DOMAIN}`);
     } catch (error) {
         console.error('Error during the build process:', error);
     }
