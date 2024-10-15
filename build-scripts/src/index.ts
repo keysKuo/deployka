@@ -25,13 +25,13 @@ async function main () {
         switch (framework) {
             case 'NextJS':
                 await new NextJSFactory().buildProject(storedId, projectName, `${OUTPUT_DIR}/${storedId}`);
-                return;
+                continue;
             case 'Vite':
                 await new ViteFactory().buildProject(storedId, projectName, `${OUTPUT_DIR}/${storedId}`);
-                return;
+                continue;
             default:
                 console.log('Framework not supported');
-                return;
+                continue;
         }
         // Build the project in sight
         // await buildProject(storedId, `${OUTPUT_DIR}/${storedId}`);
