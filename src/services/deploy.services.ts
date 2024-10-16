@@ -63,8 +63,9 @@ class DeployService implements DeployRepository {
 
     async build(form: BuildForm): Promise<BuildReponse> {
         publisher.lPush('build-queue', JSON.stringify(form));
+        let rebuild = form.rebuild;
         let subdomain = form.subdomain;
-        if (!subdomain) {
+        if (!rebuild) {
             subdomain = await createSubDomain(form.projectName, form.uploadId);
         }
 
