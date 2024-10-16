@@ -88,7 +88,7 @@ class DeployService implements DeployRepository {
 
         console.log('🗑️ Deleting Nginx config...');
         await runCommand(`sudo rm -rf /etc/nginx/sites-enabled/${form.projectName}-${form.storedId}.conf`, folderPath);
-
+        await runCommand(`sudo service nginx reload`, folderPath);
         console.log('✔️ Cleared sources on server');
 
         return {}
