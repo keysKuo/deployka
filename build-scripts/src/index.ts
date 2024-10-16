@@ -1,8 +1,6 @@
 import { commandOptions, createClient } from 'redis';
 import { downloadFromS3, uploadFolderToS3 } from './middlewares/aws.handler';
-import { buildProject } from './middlewares/project.build';
 import { DOMAIN, OUTPUT_DIR, R2_BUCKET, ROOT_DIR } from './constants';
-import { NextJSNginxConfig } from './interfaces/nginx.factory';
 import { NextJSFactory, ViteFactory } from './interfaces/framework.factory';
 const subscriber = createClient();
 subscriber.connect();
