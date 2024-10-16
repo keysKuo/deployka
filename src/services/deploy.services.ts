@@ -87,8 +87,8 @@ class DeployService implements DeployRepository {
         if (!delFolderS3Result) throw new BadRequestError("Error while deleting folder on S3");
 
         console.log('🗑️ Deleting Nginx config...');
-        await runCommand(`sudo rm -rf /etc/nginx/sites-enabled/${form.projectName}-${form.storedId}.conf`, folderPath);
-        await runCommand(`sudo service nginx reload`, folderPath);
+        await runCommand(`sudo rm -rf /etc/nginx/sites-enabled/${form.projectName}-${form.storedId}.conf`, ROOT_DIR);
+        await runCommand(`sudo service nginx reload`, ROOT_DIR);
         console.log('✔️ Cleared sources on server');
 
         return {}
