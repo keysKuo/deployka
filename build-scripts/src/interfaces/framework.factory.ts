@@ -1,4 +1,4 @@
-import { DOMAIN, OUTPUT_DIR } from "../constants"
+import { DOMAIN } from "../constants"
 import { runCommand } from "../middlewares/project.build"
 import { NextJSNginxConfig, ViteNginxConfig } from "./nginx.factory"
 
@@ -110,13 +110,14 @@ export class NextJSFactory implements FrameworkFactory {
             await runCommand(this.config.buildCommand, folderPath);
 
             console.log('⚙️ Setting nginx config...');
-            let randomPort = Math.floor(Math.random() * 10000);
-            if (randomPort < 1000)  randomPort *= 10
+            const randomPort = Math.floor(1000 + Math.random() * 9000);
             const subdomain = `${projectName}-${storedId}`;
-            const nginxConfPath = `${folderPath}/${subdomain}.conf`;
-            await new NextJSNginxConfig(`${subdomain}.${DOMAIN}`, nginxConfPath, randomPort).writeConfig();
-            await runCommand(`docker cp ${nginxConfPath} nginx:/etc/nginx/conf.d/${subdomain}.conf`, folderPath);
-            await runCommand(`docker exec nginx nginx -s reload`, folderPath);
+            const writeConfPath = `${folderPath}/${subdomain}.conf`;
+            const nginxConfPath = `/etc/nginx/sites-enabled/${subdomain}.conf`;
+
+            await new NextJSNginxConfig(`${subdomain}.${DOMAIN}`, writeConfPath, randomPort).writeConfig();
+            await runCommand(`sudo ln -s ${writeConfPath} ${nginxConfPath}`, folderPath);
+            await runCommand(`sudo service nginx reload`, folderPath);
 
             console.log('🌐 Running the project...');
             await runCommand(`pm2 start npm --name '${subdomain}' -- start -- -p ${randomPort}`, folderPath);
@@ -145,10 +146,12 @@ export class ViteFactory implements FrameworkFactory {
 
             console.log('⚙️ Setting nginx config...');
             const subdomain = `${projectName}-${storedId}`;
-            const nginxConfPath = `${folderPath}/${subdomain}.conf`;
-            await new ViteNginxConfig(`${subdomain}.${DOMAIN}`, nginxConfPath, `${folderPath}/dist`).writeConfig();
-            await runCommand(`docker cp ${nginxConfPath} nginx:/etc/nginx/conf.d/${subdomain}.conf`, folderPath);
-            await runCommand(`docker exec nginx nginx -s reload`, folderPath);
+            const writeConfPath = `${folderPath}/${subdomain}.conf`;
+            const nginxConfPath = `/etc/nginx/sites-enabled/${subdomain}.conf`;
+
+            await new ViteNginxConfig(`${subdomain}.${DOMAIN}`, writeConfPath, `${folderPath}/dist`).writeConfig();
+            await runCommand(`sudo ln -s ${writeConfPath} ${nginxConfPath}`, folderPath);
+            await runCommand(`sudo service nginx reload`, folderPath);
 
             console.log(`✔️ Your website started: https://${subdomain}.${DOMAIN}`);
         } catch (error) {

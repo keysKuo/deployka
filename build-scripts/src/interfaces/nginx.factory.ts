@@ -1,4 +1,3 @@
-import { SERVER_IP_ADDRESS } from "../constants";
 import fs from 'fs';
 
 export interface NginxConfig {
@@ -27,7 +26,7 @@ export class NextJSNginxConfig implements NginxConfig {
                 server_name ${this.serverName};
 
                 location / {
-                    proxy_pass http://${SERVER_IP_ADDRESS}:${this.port};
+                    proxy_pass http://localhost:${this.port};
                     proxy_http_version 1.1;
                     proxy_set_header Upgrade $http_upgrade;
                     proxy_set_header Connection 'upgrade';
