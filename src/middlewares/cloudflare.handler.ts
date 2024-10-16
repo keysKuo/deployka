@@ -13,6 +13,24 @@ export const createSubDomain = async (subname: string, storedId: string) => {
     const subdomain = `${subname}-${storedId}`;
 
     try {
+        const dnsRecords: DnsRecord[] = await axios.get(
+            `https://api.cloudflare.com/client/v4/zones/${zoneId}/dns_records`,
+            {
+                headers: {
+                    Authorization: `Bearer ${apiToken}`,
+                    'Content-Type': 'application/json',
+                }
+            }
+        ).then(response => response.data.result);
+        const record = dnsRecords.find(
+            (rec) => rec.name === subdomain
+        );
+
+        if (!record) {
+            console.log('Subdomain not found:', subdomain);
+            return subdomain;
+        }
+
         const dnsRecord: DnsRecord = await axios.post(
             `https://api.cloudflare.com/client/v4/zones/${zoneId}/dns_records`,
             {
