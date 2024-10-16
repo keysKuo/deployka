@@ -2,7 +2,7 @@ import axios from 'axios';
 import { exec } from 'child_process';
 import path from 'path';
 
-const runCommand = (command: string, workingDir: string) => {
+export const runCommand = (command: string, workingDir: string) => {
     return new Promise((resolve, reject) => {
         const child = exec(command, { cwd: workingDir }, (error, stdout, stderr) => {
             if (error) {
