@@ -74,13 +74,15 @@ export class ViteNginxConfig implements NginxConfig {
                 index index.html;
 
                 location / {
-                        try_files $uri /index.html;
+                        try_files $uri $uri/ /index.html;
                 }
 
-                error_page 500 502 503 504 /50x.html;
-                location = /50x.html {
-                       root /usr/share/nginx/html;
+                location ~* \.(js|css|png|jpg|jpeg|gif|ico|svg)$ {
+                    expires 1y;
+                    log_not_found off;
+                    access_log off;
                 }
+
             }
         `
 

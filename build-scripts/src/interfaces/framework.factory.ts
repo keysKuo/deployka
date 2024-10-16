@@ -144,15 +144,11 @@ export class ViteFactory implements FrameworkFactory {
             await runCommand(this.config.buildCommand, folderPath);
 
             console.log('⚙️ Setting nginx config...');
-            const randomPort = Math.floor(Math.random() * 10000);
             const subdomain = `${projectName}-${storedId}`;
             const nginxConfPath = `${folderPath}/${subdomain}.conf`;
             await new ViteNginxConfig(`${subdomain}.${DOMAIN}`, nginxConfPath, `${folderPath}/dist`).writeConfig();
             await runCommand(`docker cp ${nginxConfPath} nginx:/etc/nginx/conf.d/${subdomain}.conf`, folderPath);
             await runCommand(`docker exec nginx nginx -s reload`, folderPath);
-
-            // console.log('🌐 Running the project...');
-            // await runCommand(`pm2 start npm --name '${subdomain}' -- start -- -p ${randomPort}`, folderPath);
 
             console.log(`✔️ Your website started: https://${subdomain}.${DOMAIN}`);
         } catch (error) {
