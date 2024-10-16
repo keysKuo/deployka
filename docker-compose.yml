@@ -1,13 +1,13 @@
 version: '3'
 
 services:
-  mongo:
-    image: mongo:latest
-    container_name: mongo
-    ports:
-      - "27017:27017"
-    networks:
-      - deployka_network
+  # mongo:
+  #   image: mongo:latest
+  #   container_name: mongo
+  #   ports:
+  #     - "27017:27017"
+  #   networks:
+  #     - deployka_network
 
   # upload:
   #   build:
@@ -31,15 +31,15 @@ services:
   #     - SERVER_IP_ADDRESS=14.225.192.64
   #   user: root
 
-  nginx:
-    image: nginx:alpine
-    container_name: nginx
-    ports:
-      - "80:80"
-    volumes:
-      - ./nginx.conf:/etc/nginx/conf.d/deployka.conf
-    networks:
-      - deployka_network
+  # nginx:
+  #   image: nginx:alpine
+  #   container_name: nginx
+  #   ports:
+  #     - "80:80"
+  #   volumes:
+  #     - ./nginx.conf:/etc/nginx/conf.d/deployka.conf
+  #   networks:
+  #     - deployka_network
 
   redis:
     image: redis:alpine
