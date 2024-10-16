@@ -14,8 +14,16 @@ class DeployController {
     static async buildProject(req: Request, res: Response, next: NextFunction) {
         return new SuccessResponse({
 			code: 201,
-			message: `✔️ Build project`,
+			message: `✔️ Building project...`,
 			metadata: await deployServices.build({...req.body}),
+		}).send({ response: res });
+    }
+
+    static async deleteProject(req: Request, res: Response, next: NextFunction) {
+        return new SuccessResponse({
+			code: 201,
+			message: `✔️ Deleted project`,
+			metadata: await deployServices.delete({...req.body}),
 		}).send({ response: res });
     }
 }

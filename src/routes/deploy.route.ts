@@ -8,5 +8,6 @@ const router = express.Router();
 // router.use(catchAsync(verifyAuth));
 router.post('/upload', catchAsync(DeployController.uploadRepo));
 router.post('/build', catchAsync(DeployController.buildProject));
+router.delete('/delete', catchAsync(DeployController.deleteProject));
 
 export default router;

@@ -1,12 +1,12 @@
-import { BuildForm, BuildReponse, DeployRepository, RepositoryData, UploadForm, UploadResponse } from "../repositories/deploy.repo";
+import { BuildForm, BuildReponse, DeleteForm, DeleteResponse, DeployRepository, RepositoryData, UploadForm, UploadResponse } from "../repositories/deploy.repo";
 import simpleGit from 'simple-git';
 import { generateId } from "../utils";
 import path from "path";
-import { uploadFolderToS3 } from "../middlewares/aws.handler";
+import { deleteFromS3, uploadFolderToS3 } from "../middlewares/aws.handler";
 import { OUTPUT_DIR, R2_BUCKET, ROOT_DIR } from "../constants";
 import { createClient } from 'redis';
 import { deleteFolder } from "../middlewares/file.handler";
-import { createSubDomain } from "../middlewares/cloudflare.handler";
+import { createSubDomain, deleteSubDomain } from "../middlewares/cloudflare.handler";
 import { BadRequestError, FileNotFoundError } from "../middlewares/error.res";
 import { getRepositoryData } from "../middlewares/project.build";
 const publisher = createClient({
@@ -71,6 +71,20 @@ class DeployService implements DeployRepository {
 
         console.log(subdomain)
         return { subdomain };
+    }
+
+    async delete(form: DeleteForm): Promise<DeleteResponse> {
+        console.log('🗑️ Deleting subdomain: ' + `${form.projectName}-${form.storedId}...`);
+        const delDomainResult = await deleteSubDomain(form.projectName, form.storedId);
+        if (!delDomainResult)   throw new BadRequestError("Error while deleting domain");
+
+        console.log('🗑️ Deleting sources from S3: ' + form.storedId + '...');
+        const delFolderS3Result = await deleteFromS3(R2_BUCKET, `sources/${form.storedId}`);
+        if (!delFolderS3Result) throw new BadRequestError("Error while deleting folder on S3");
+
+        console.log('✔️ Cleared sources on server');
+        deleteFolder(path.posix.join(OUTPUT_DIR, form.storedId));
+        return {}
     }
 
     async cancel(uploadId: string): Promise<boolean> {

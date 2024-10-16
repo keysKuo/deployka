@@ -39,6 +39,11 @@ export type BuildForm = {
     environments?: Environment[]
 }
 
+export type DeleteForm = {
+    projectName: string,
+    storedId: string
+}
+
 export type UploadResponse = {
     success: boolean,
     uploadId: string,
@@ -53,9 +58,14 @@ export type BuildReponse = {
 
 }
 
+export type DeleteResponse = {
+
+}
+
 
 export interface DeployRepository {
     upload(form: UploadForm): Promise<UploadResponse>;
     build(form: BuildForm): Promise<BuildReponse>;
+    delete(form: DeleteForm): Promise<DeleteResponse>;
     cancel(uploadId: string): Promise<boolean>;
 }

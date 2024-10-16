@@ -75,7 +75,7 @@ export const deleteSubDomain = async (subname: string, storedId: string) => {
 
         if (!record) {
             console.log('Subdomain not found:', subdomain);
-            return;
+            return false;
         }
 
         // Gọi API để xóa DNS record của subdomain
@@ -91,11 +91,14 @@ export const deleteSubDomain = async (subname: string, storedId: string) => {
 
         if (deleteResponse.data?.success) {
             console.log('Subdomain deleted successfully:', subdomain);
+            return true;
         } else {
             console.error('Error deleting subdomain:', deleteResponse.data?.errors);
+            return false;
         }
     } catch (error) {
         console.error('Error deleting subdomain:', error);
+        return false;
     }
 
 }

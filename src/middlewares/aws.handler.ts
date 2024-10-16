@@ -54,9 +54,11 @@ export const uploadFolderToS3 = async (bucket: string, storedPath: string, folde
 
         await Promise.all(uploadPromises);
         console.log('All files uploaded successfully.');
+        return true;
     }
     catch (error) {
         console.error('Error uploading files to S3:', error);
+        return false;
     }
 }
 
@@ -85,8 +87,10 @@ export const deleteFromS3 = async (bucket: string, folderPath: string) => {
         await s3Client.send(deleteCommand);
 
         console.log(`Successfully deleted folder: ${folderPath}`);
+        return true;
     } catch (error) {
         console.error('Error deleting folder:', error);
+        return false;
     }
 }
 
