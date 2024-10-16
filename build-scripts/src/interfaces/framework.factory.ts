@@ -91,7 +91,7 @@ export const AngularConf: FrameworkConfig = {
 
 export interface FrameworkFactory {
     config: FrameworkConfig;
-    buildProject(storedId: string, projectName: string, folderPath: string): Promise<void>;
+    buildProject(storedId: string, projectName: string, folderPath: string, rebuild: boolean): Promise<void>;
 }
 
 export class NextJSFactory implements FrameworkFactory {
@@ -101,7 +101,7 @@ export class NextJSFactory implements FrameworkFactory {
         this.config = config;
     }
 
-    async buildProject(storedId: string, projectName: string, folderPath: string): Promise<void> {
+    async buildProject(storedId: string, projectName: string, folderPath: string, rebuild: boolean = false): Promise<void> {
         try {
             console.log('📦 Installing dependencies...');
             await runCommand(this.config.installCommand, folderPath);
@@ -109,18 +109,24 @@ export class NextJSFactory implements FrameworkFactory {
             console.log('🚀 Building the project...');
             await runCommand(this.config.buildCommand, folderPath);
 
-            console.log('⚙️ Setting nginx config...');
-            const randomPort = Math.floor(1000 + Math.random() * 9000);
             const subdomain = `${projectName}-${storedId}`;
-            const writeConfPath = `${folderPath}/${subdomain}.conf`;
-            const nginxConfPath = `/etc/nginx/sites-enabled/${subdomain}.conf`;
+            if (rebuild) {
+                console.log('🌐 Running the project...');
+                await runCommand(`pm2 restart ${subdomain}`, folderPath);
+            }
+            else {
+                console.log('⚙️ Setting nginx config...');
+                const randomPort = Math.floor(1000 + Math.random() * 9000);
+                const writeConfPath = `${folderPath}/${subdomain}.conf`;
+                const nginxConfPath = `/etc/nginx/sites-enabled/${subdomain}.conf`;
 
-            await new NextJSNginxConfig(`${subdomain}.${DOMAIN}`, writeConfPath, randomPort).writeConfig();
-            await runCommand(`sudo ln -s ${writeConfPath} ${nginxConfPath}`, folderPath);
-            await runCommand(`sudo service nginx reload`, folderPath);
+                await new NextJSNginxConfig(`${subdomain}.${DOMAIN}`, writeConfPath, randomPort).writeConfig();
+                await runCommand(`sudo ln -s ${writeConfPath} ${nginxConfPath}`, folderPath);
+                await runCommand(`sudo service nginx reload`, folderPath);
 
-            console.log('🌐 Running the project...');
-            await runCommand(`pm2 start npm --name '${subdomain}' -- start -- -p ${randomPort}`, folderPath);
+                console.log('🌐 Running the project...');
+                await runCommand(`pm2 start npm --name '${subdomain}' -- start -- -p ${randomPort}`, folderPath);
+            }
 
             console.log(`✔️ Your website started: https://${subdomain}.${DOMAIN}`);
         } catch (error) {
@@ -136,7 +142,7 @@ export class ViteFactory implements FrameworkFactory {
         this.config = config;
     }
 
-    async buildProject(storedId: string, projectName: string, folderPath: string): Promise<void> {
+    async buildProject(storedId: string, projectName: string, folderPath: string, rebuild: boolean = false): Promise<void> {
         try {
             console.log('📦 Installing dependencies...');
             await runCommand(this.config.installCommand, folderPath);
@@ -144,14 +150,19 @@ export class ViteFactory implements FrameworkFactory {
             console.log('🚀 Building the project...');
             await runCommand(this.config.buildCommand, folderPath);
 
-            console.log('⚙️ Setting nginx config...');
             const subdomain = `${projectName}-${storedId}`;
-            const writeConfPath = `${folderPath}/${subdomain}.conf`;
-            const nginxConfPath = `/etc/nginx/sites-enabled/${subdomain}.conf`;
+            if (rebuild) {
+                // pass
+            }
+            else {
+                console.log('⚙️ Setting nginx config...');
+                const writeConfPath = `${folderPath}/${subdomain}.conf`;
+                const nginxConfPath = `/etc/nginx/sites-enabled/${subdomain}.conf`;
 
-            await new ViteNginxConfig(`${subdomain}.${DOMAIN}`, writeConfPath, `${folderPath}/dist`).writeConfig();
-            await runCommand(`sudo ln -s ${writeConfPath} ${nginxConfPath}`, folderPath);
-            await runCommand(`sudo service nginx reload`, folderPath);
+                await new ViteNginxConfig(`${subdomain}.${DOMAIN}`, writeConfPath, `${folderPath}/dist`).writeConfig();
+                await runCommand(`sudo ln -s ${writeConfPath} ${nginxConfPath}`, folderPath);
+                await runCommand(`sudo service nginx reload`, folderPath);
+            }
 
             console.log(`✔️ Your website started: https://${subdomain}.${DOMAIN}`);
         } catch (error) {

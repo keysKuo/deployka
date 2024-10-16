@@ -20,12 +20,13 @@ async function main () {
 
         const framework = buildData.framework;
         const projectName = buildData.projectName;
+        const rebuild = buildData.rebuild || false;
         switch (framework) {
             case 'NextJS':
-                await new NextJSFactory().buildProject(storedId, projectName, `${OUTPUT_DIR}/${storedId}`);
+                await new NextJSFactory().buildProject(storedId, projectName, `${OUTPUT_DIR}/${storedId}`, rebuild);
                 continue;
             case 'Vite':
-                await new ViteFactory().buildProject(storedId, projectName, `${OUTPUT_DIR}/${storedId}`);
+                await new ViteFactory().buildProject(storedId, projectName, `${OUTPUT_DIR}/${storedId}`, rebuild);
                 continue;
             default:
                 console.log('Framework not supported');
