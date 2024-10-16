@@ -116,8 +116,8 @@ export class NextJSFactory implements FrameworkFactory {
             const nginxConfPath = `/etc/nginx/sites-enabled/${subdomain}.conf`;
 
             await new NextJSNginxConfig(`${subdomain}.${DOMAIN}`, writeConfPath, randomPort).writeConfig();
-            await runCommand(`ln -s ${writeConfPath} ${nginxConfPath}`, folderPath);
-            await runCommand(`service nginx reload`, folderPath);
+            await runCommand(`sudo ln -s ${writeConfPath} ${nginxConfPath}`, folderPath);
+            await runCommand(`sudo service nginx reload`, folderPath);
 
             console.log('🌐 Running the project...');
             await runCommand(`pm2 start npm --name '${subdomain}' -- start -- -p ${randomPort}`, folderPath);
@@ -150,8 +150,8 @@ export class ViteFactory implements FrameworkFactory {
             const nginxConfPath = `/etc/nginx/sites-enabled/${subdomain}.conf`;
 
             await new ViteNginxConfig(`${subdomain}.${DOMAIN}`, writeConfPath, `${folderPath}/dist`).writeConfig();
-            await runCommand(`ln -s ${writeConfPath} ${nginxConfPath}`, folderPath);
-            await runCommand(`service nginx reload`, folderPath);
+            await runCommand(`sudo ln -s ${writeConfPath} ${nginxConfPath}`, folderPath);
+            await runCommand(`sudo service nginx reload`, folderPath);
 
             console.log(`✔️ Your website started: https://${subdomain}.${DOMAIN}`);
         } catch (error) {
