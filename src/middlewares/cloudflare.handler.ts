@@ -10,7 +10,7 @@ type DnsRecord = {
 }
 
 export const createSubDomain = async (subname: string, storedId: string) => {
-    const subdomain = `${subname}-${storedId}.${DOMAIN}`;
+    const subdomain = `${subname}-${storedId}`;
 
     try {
         const dnsRecords: DnsRecord[] = await axios.get(
