@@ -5,7 +5,7 @@ import path from "path";
 import { deleteFromS3, uploadFolderToS3 } from "../middlewares/aws.handler";
 import { OUTPUT_DIR, R2_BUCKET, ROOT_DIR } from "../constants";
 import { createClient } from 'redis';
-import { deleteFolder } from "../middlewares/file.handler";
+import { deleteFolder, isExisted } from "../middlewares/file.handler";
 import { createSubDomain, deleteSubDomain } from "../middlewares/cloudflare.handler";
 import { BadRequestError, FileNotFoundError } from "../middlewares/error.res";
 import { getRepositoryData } from "../middlewares/project.build";
@@ -74,6 +74,9 @@ class DeployService implements DeployRepository {
     }
 
     async delete(form: DeleteForm): Promise<DeleteResponse> {
+        const folderPath = path.posix.join(ROOT_DIR, `build-scripts/dist/output` , form.storedId);
+        if (!isExisted(folderPath)) throw new FileNotFoundError("Project not found");
+
         console.log('🗑️ Deleting subdomain: ' + `${form.projectName}-${form.storedId}...`);
         const delDomainResult = await deleteSubDomain(form.projectName, form.storedId);
         if (!delDomainResult)   throw new BadRequestError("Error while deleting domain");
@@ -83,7 +86,7 @@ class DeployService implements DeployRepository {
         if (!delFolderS3Result) throw new BadRequestError("Error while deleting folder on S3");
 
         console.log('✔️ Cleared sources on server');
-        deleteFolder(path.posix.join(OUTPUT_DIR, form.storedId));
+        deleteFolder(path.posix.join(ROOT_DIR, `build-scripts/dist/output` , form.storedId));
         return {}
     }
 
