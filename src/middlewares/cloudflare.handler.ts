@@ -10,7 +10,7 @@ type DnsRecord = {
 }
 
 export const createSubDomain = async (subname: string, storedId: string) => {
-    const subdomain = `${subname}-${storedId}`;
+    const subdomain = `${subname}-${storedId}/${DOMAIN}`;
 
     try {
         const dnsRecords: DnsRecord[] = await axios.get(
@@ -26,8 +26,8 @@ export const createSubDomain = async (subname: string, storedId: string) => {
             (rec) => rec.name === subdomain
         );
 
-        if (!record) {
-            console.log('Subdomain not found:', subdomain);
+        if (record) {
+            console.log('Subdomain existed:', subdomain);
             return subdomain;
         }
 
