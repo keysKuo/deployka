@@ -31,6 +31,7 @@ export const createSubDomain = async (subname: string, storedId: string) => {
         ).then(response => response.data.result);
 
         console.log('Subdomain created:', dnsRecord.name);
+        return dnsRecord.name;
     } catch (error) {
         console.error('Error creating subdomain:', error);
     }
