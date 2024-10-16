@@ -30,6 +30,7 @@ export type BuildForm = {
     uploadId: string,
     projectName: string
     framework: FrameWork,
+    subdomain?: string,
     rootDir?: string,
     outDir?: string,
     buildCommand?: string,
