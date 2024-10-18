@@ -49,9 +49,19 @@ export const getRepositoryData = async (repoUrl: string) => {
     const owner = match[1];
     const repo = match[2].replace(".git","");
 
+    const getDataUrl = `https://api.github.com/repos/${owner}/${repo}`;
+    const getBranchesUrl = `https://api.github.com/repos/${owner}/${repo}/branches`;
     try {
-        const response = await axios.get(`https://api.github.com/repos/${owner}/${repo}`);
-        return response.data;
+        const [dataResponse, branchesResponse] = await Promise.all([
+            axios.get(getDataUrl),
+            axios.get(getBranchesUrl)
+        ]);
+
+        if (!dataResponse.data || !branchesResponse.data) {
+            return null;
+          }
+
+        return { ...dataResponse.data, branches: branchesResponse.data };
     } catch (error) {
         console.error('Error fetching repository data:', error);
         return null;

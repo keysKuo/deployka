@@ -44,6 +44,10 @@ export type DeleteForm = {
     storedId: string
 }
 
+export type CancelForm = {
+    uploadId: string
+}
+
 export type UploadResponse = {
     success: boolean,
     uploadId: string,
@@ -62,10 +66,14 @@ export type DeleteResponse = {
 
 }
 
+export type CancelResponse = {
+
+}
+
 
 export interface DeployRepository {
     upload(form: UploadForm): Promise<UploadResponse>;
     build(form: BuildForm): Promise<BuildReponse>;
     delete(form: DeleteForm): Promise<DeleteResponse>;
-    cancel(uploadId: string): Promise<boolean>;
+    cancel(form: CancelForm): Promise<CancelResponse>;
 }

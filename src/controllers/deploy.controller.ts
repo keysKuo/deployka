@@ -26,6 +26,14 @@ class DeployController {
 			metadata: await deployServices.delete({...req.body}),
 		}).send({ response: res });
     }
+
+    static async cancelDeploy(req: Request, res: Response, next: NextFunction) {
+        return new SuccessResponse({
+			code: 201,
+			message: `✔️ Cancelled deploy`,
+			metadata: await deployServices.cancel({...req.body}),
+		}).send({ response: res });
+    }
 }
 
 export default DeployController;

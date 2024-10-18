@@ -1,4 +1,4 @@
-import { BuildForm, BuildReponse, DeleteForm, DeleteResponse, DeployRepository, RepositoryData, UploadForm, UploadResponse } from "../repositories/deploy.repo";
+import { BuildForm, BuildReponse, CancelForm, CancelResponse, DeleteForm, DeleteResponse, DeployRepository, RepositoryData, UploadForm, UploadResponse } from "../repositories/deploy.repo";
 import simpleGit from 'simple-git';
 import { generateId } from "../utils";
 import path from "path";
@@ -44,14 +44,7 @@ class DeployService implements DeployRepository {
             return {
                 success: true,
                 uploadId: uploadId,
-                repoData: {
-                    id: repoData.id,
-                    node_id: repoData.node_id,
-                    name: repoData.name,
-                    full_name: repoData.full_name,
-                    private: repoData.private,
-                    avatar_url: repoData.owner.avatar_url
-                } as RepositoryData,
+                repoData: repoData,
                 repoUrl: form.repoUrl,
                 uploadDir: outputFolder,
             }
@@ -91,11 +84,14 @@ class DeployService implements DeployRepository {
         await runCommand(`sudo service nginx reload`, ROOT_DIR);
         console.log('✔️ Cleared sources on server');
 
-        return {}
+        return {};
     }
 
-    async cancel(uploadId: string): Promise<boolean> {
-        return false;
+    async cancel(form: CancelForm): Promise<CancelResponse> {
+        console.log('🗑️ Deleting sources from S3: ' + form.uploadId + '...');
+        const delFolderS3Result = await deleteFromS3(R2_BUCKET, `sources/${form.uploadId}`);
+        if (!delFolderS3Result) throw new BadRequestError("Error while deleting folder on S3");
+        return {};
     }
 }
 
