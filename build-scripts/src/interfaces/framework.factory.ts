@@ -2,6 +2,8 @@ import { DOMAIN } from "../constants"
 import { runCommand } from "../middlewares/project.build"
 import { NextJSNginxConfig, ViteNginxConfig } from "./nginx.factory"
 
+const isStaging = process.env.NODE_ENV === 'production';
+
 export const enum OutputDirectory {
     CRA = 'build/',
     NEXTJS = '.next/',
@@ -89,9 +91,16 @@ export const AngularConf: FrameworkConfig = {
     startCommand: StartCommand.ANGULAR
 };
 
+type BuildParams = {
+    storedId: string,
+    projectName: string,
+    workingDir: string,
+    rebuild: boolean
+}
+
 export interface FrameworkFactory {
     config: FrameworkConfig;
-    buildProject(storedId: string, projectName: string, folderPath: string, rebuild: boolean): Promise<void>;
+    buildProject(params: BuildParams): Promise<void>;
 }
 
 export class NextJSFactory implements FrameworkFactory {
@@ -101,31 +110,67 @@ export class NextJSFactory implements FrameworkFactory {
         this.config = config;
     }
 
-    async buildProject(storedId: string, projectName: string, folderPath: string, rebuild: boolean = false): Promise<void> {
+    async buildProject(params: BuildParams): Promise<void> {
         try {
-            console.log('📦 Installing dependencies...');
-            await runCommand(this.config.installCommand, folderPath);
+            // 1. Install dependencies
+            await runCommand({
+                command: this.config.installCommand,
+                workingDir: params.workingDir,
+                log: '📦 Installing dependencies...'
+            });
 
-            console.log('🚀 Building the project...');
-            await runCommand(this.config.buildCommand, folderPath);
+            // 2. Build Project
+            await runCommand({
+                command: this.config.buildCommand,
+                workingDir: params.workingDir,
+                log: '🚀 Building the project...'
+            });
 
-            const subdomain = `${projectName}-${storedId}`;
-            if (rebuild) {
-                console.log('🌐 Running the project...');
-                await runCommand(`pm2 restart ${subdomain}`, folderPath);
+            // 3.1 Run dev start
+            if (!isStaging) {
+                await runCommand({
+                    command: 'npm run dev',
+                    workingDir: params.workingDir,
+                    log: '🌐 Running project as dev...'
+                });
+                return;
+            }
+
+            const subdomain = `${params.projectName}-${params.storedId}`;
+
+            // 3.2 Restart project as rebuilding
+            if (params.rebuild) {
+                await runCommand({
+                    command: `pm2 restart ${subdomain}`,
+                    workingDir: params.workingDir,
+                    log: '🌐 Restart the project...'
+                });
             }
             else {
-                console.log('⚙️ Setting nginx config...');
                 const randomPort = Math.floor(1000 + Math.random() * 9000);
-                const writeConfPath = `${folderPath}/${subdomain}.conf`;
+                const writeConfPath = `${params.workingDir}/${subdomain}.conf`;
                 const nginxConfPath = `/etc/nginx/sites-enabled/${subdomain}.conf`;
-
                 await new NextJSNginxConfig(`${subdomain}.${DOMAIN}`, writeConfPath, randomPort).writeConfig();
-                await runCommand(`sudo ln -s ${writeConfPath} ${nginxConfPath}`, folderPath);
-                await runCommand(`sudo service nginx reload`, folderPath);
 
-                console.log('🌐 Running the project...');
-                await runCommand(`pm2 start npm --name '${subdomain}' -- start -- -p ${randomPort}`, folderPath);
+                // 3.3 Link nginx.conf to nginx/sites-enabled
+                await runCommand({
+                    command: `sudo ln -s ${writeConfPath} ${nginxConfPath}`,
+                    workingDir: params.workingDir,
+                    log: '⚙️ Setting nginx config...'
+                });
+
+                // 4. Reload nginx service
+                await runCommand({
+                    command: `sudo service nginx reload`,
+                    workingDir: params.workingDir,
+                });
+
+                // 5. Start new project with pm2
+                await runCommand({
+                    command: `pm2 start npm --name '${subdomain}' -- start -- -p ${randomPort}`,
+                    workingDir: params.workingDir,
+                    log: '🌐 Running the project...'
+                });
             }
 
             console.log(`✔️ Your website started: https://${subdomain}.${DOMAIN}`);
@@ -142,31 +187,58 @@ export class ViteFactory implements FrameworkFactory {
         this.config = config;
     }
 
-    async buildProject(storedId: string, projectName: string, folderPath: string, rebuild: boolean = false): Promise<void> {
+    async buildProject(params: BuildParams): Promise<void> {
         try {
-            console.log('📦 Installing dependencies...');
-            await runCommand(this.config.installCommand, folderPath);
+            // 1. Install dependencies
+            await runCommand({
+                command: this.config.installCommand,
+                workingDir: params.workingDir,
+                log: '📦 Installing dependencies...'
+            });
 
-            console.log('🚀 Building the project...');
-            await runCommand(this.config.buildCommand, folderPath);
+            // 2. Build Project
+            await runCommand({
+                command: this.config.buildCommand,
+                workingDir: params.workingDir,
+                log: '🚀 Building the project...'
+            });
 
-            const subdomain = `${projectName}-${storedId}`;
-            if (rebuild) {
+            // 3.1 Run dev start
+            if (!isStaging) {
+                await runCommand({
+                    command: 'npm run dev',
+                    workingDir: params.workingDir,
+                    log: '🌐 Running project as dev...'
+                });
+                return;
+            }
+
+            const subdomain = `${params.projectName}-${params.storedId}`;
+            if (params.rebuild) {
                 // pass
             }
             else {
-                console.log('⚙️ Setting nginx config...');
-                const writeConfPath = `${folderPath}/${subdomain}.conf`;
+                const writeConfPath = `${params.workingDir}/${subdomain}.conf`;
                 const nginxConfPath = `/etc/nginx/sites-enabled/${subdomain}.conf`;
+                await new ViteNginxConfig(`${subdomain}.${DOMAIN}`, writeConfPath, `${params.workingDir}/dist`).writeConfig();
 
-                await new ViteNginxConfig(`${subdomain}.${DOMAIN}`, writeConfPath, `${folderPath}/dist`).writeConfig();
-                await runCommand(`sudo ln -s ${writeConfPath} ${nginxConfPath}`, folderPath);
-                await runCommand(`sudo service nginx reload`, folderPath);
+                // 3.2 Link nginx.conf to nginx/sites-enabled
+                await runCommand({
+                    command: `sudo ln -s ${writeConfPath} ${nginxConfPath}`,
+                    workingDir: params.workingDir,
+                    log: '⚙️ Setting nginx config...'
+                });
+
+                // 4. Reload nginx service
+                await runCommand({
+                    command: `sudo service nginx reload`,
+                    workingDir: params.workingDir,
+                });
             }
 
             console.log(`✔️ Your website started: https://${subdomain}.${DOMAIN}`);
         } catch (error) {
-            console.error('Error during the build process:', error);
+            console.error('Error during the build prstoredId: string, projectName: string, folderPath: string, rebuild: booleanocess:', error);
         }
     }
 }

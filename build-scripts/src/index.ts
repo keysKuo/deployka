@@ -23,10 +23,20 @@ async function main () {
         const rebuild = buildData.rebuild || false;
         switch (framework) {
             case 'NextJS':
-                await new NextJSFactory().buildProject(storedId, projectName, `${OUTPUT_DIR}/${storedId}`, rebuild);
+                await new NextJSFactory().buildProject({
+                    storedId: storedId,
+                    projectName: projectName,
+                    workingDir: `${OUTPUT_DIR}/${storedId}`,
+                    rebuild: rebuild
+                });
                 continue;
             case 'Vite':
-                await new ViteFactory().buildProject(storedId, projectName, `${OUTPUT_DIR}/${storedId}`, rebuild);
+                await new ViteFactory().buildProject({
+                    storedId: storedId,
+                    projectName: projectName,
+                    workingDir: `${OUTPUT_DIR}/${storedId}`,
+                    rebuild: rebuild
+                });
                 continue;
             default:
                 console.log('Framework not supported');
