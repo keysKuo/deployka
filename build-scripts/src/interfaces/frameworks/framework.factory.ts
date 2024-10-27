@@ -17,7 +17,7 @@ export const runCommand = async (params: RunCommandParams) => {
     }
 
     return new Promise((resolve, reject) => {
-        const child = exec(params.command, { cwd: params.workingDir }, (error, stdout, stderr) => {
+        const child = exec(params.command, { cwd: params.workingDir, env: {...process.env} }, (error, stdout, stderr) => {
             if (error) {
                 console.error(`Error executing command: ${params.command}`);
                 console.error(stderr);
