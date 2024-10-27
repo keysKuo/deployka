@@ -11,7 +11,7 @@ export type RunCommandParams = {
     log?: string
 }
 
-export const runCommand = (params: RunCommandParams) => {
+export const runCommand = async (params: RunCommandParams) => {
     if (params.log) {
         console.log(params.log);
     }
