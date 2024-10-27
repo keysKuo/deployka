@@ -1,40 +1,7 @@
-import { exec } from 'child_process';
 import fs from 'fs';
-import { DOMAIN, SERVER_IP_ADDRESS } from '../constants';
-import { FrameworkConfig } from '../interfaces/framework.factory';
+import { SERVER_IP_ADDRESS } from '../constants';
 
-export type RunCommandParams = {
-    command: string,
-    workingDir: string,
-    log?: string
-}
 
-export const runCommand = (params: RunCommandParams) => {
-    if (params.log) {
-        console.log(params.log);
-    }
-
-    return new Promise((resolve, reject) => {
-        const child = exec(params.command, { cwd: params.workingDir }, (error, stdout, stderr) => {
-            if (error) {
-                console.error(`Error executing command: ${params.command}`);
-                console.error(stderr);
-                reject(error);
-            } else {
-                // console.log(stdout);
-                resolve(stdout);
-            }
-        })
-
-        child.stdout?.on('data', (data) => {
-            console.log(data.toString());
-        })
-
-        child.stderr?.on('data', (data) => {
-            console.error(data.toString());
-        })
-    })
-}
 
 // export const runCommand = (command: string, workingDir: string, log?: string) => {
 //     if (log) {
@@ -89,7 +56,7 @@ export const runCommand = (params: RunCommandParams) => {
 
 export const createNginxConf = (domain: string, port: number, filePath: string) => {
     const nginxContent =
-    `
+        `
     server {
         listen 80;
         server_name ${domain};

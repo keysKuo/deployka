@@ -1,12 +1,12 @@
 import { commandOptions, createClient } from 'redis';
 import { downloadFromS3, uploadFolderToS3 } from './middlewares/aws.handler';
 import { DOMAIN, OUTPUT_DIR, R2_BUCKET, ROOT_DIR } from './constants';
-import { NextJSFactory, ViteFactory } from './interfaces/framework.factory';
+import { NextJSFactory, ViteFactory } from './interfaces/frameworks/framework.factory';
 const subscriber = createClient();
 subscriber.connect();
 
-async function main () {
-    while(1) {
+async function main() {
+    while (1) {
         const response = await subscriber.brPop(commandOptions({ isolated: true }), 'build-queue', 0);
 
         const buildData = JSON.parse(response?.element || "");
