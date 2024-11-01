@@ -6,9 +6,12 @@ import cookieParser from "cookie-parser";
 import expressSession from "express-session";
 import helmet from "helmet";
 import { ErrorResponse } from '../middlewares/error.res';
+import swaggerUi from "swagger-ui-express";
+import YAML from "yamljs";
 import dotenv from "dotenv";
 dotenv.config();
 
+const swaggerDocument = YAML.load("./src/app/swagger.yml");
 
 const app = express();
 app.use(morgan("dev"));
@@ -31,6 +34,7 @@ import "../database/mongo.init";
 import routes from '../routes';
 
 app.use('/api/v1', routes);
+app.use("/docs", swaggerUi.serve, swaggerUi.setup(swaggerDocument));
 
 // init routers
 app.get("/", (req: Request, res: Response, next: NextFunction) => {

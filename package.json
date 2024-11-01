@@ -22,6 +22,9 @@
     "@types/lodash": "^4.17.7",
     "@types/morgan": "^1.9.9",
     "@types/node": "^22.4.2",
+    "@types/swagger-jsdoc": "^6.0.4",
+    "@types/swagger-ui-express": "^4.1.7",
+    "@types/yamljs": "^0.2.34",
     "bcrypt": "^5.1.1",
     "cookie-parser": "^1.4.6",
     "cors": "^2.8.5",
@@ -49,6 +52,9 @@
     "path": "^0.12.7",
     "redis": "^4.7.0",
     "simple-git": "^3.27.0",
-    "stripe": "^16.11.0"
+    "stripe": "^16.11.0",
+    "swagger-jsdoc": "^6.2.8",
+    "swagger-ui-express": "^5.0.1",
+    "yamljs": "^0.3.0"
   }
 }
