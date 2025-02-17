@@ -1,0 +1,124 @@
+openapi: "3.0.0"
+info:
+  title: "Deployka Documentation"
+  version: "1.0.0"
+  description: "API documentation for deployka"
+  contact:
+    name: "nKeys Kuo"
+    email: "nkeyskuo124@example.com"
+paths:
+  /api/v1/deploy/upload:
+    post:
+      summary: "Upload github repository"
+      description: "Upload github repository to check whether repository is available."
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                repoUrl:
+                  type: string
+                  descri ption: "The repository url"
+                  example: "https://github.com/keysKuo/deployka-test.git"
+      responses:
+        '200':
+          description: "Repository is safe"
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                    example: true
+                  uploadId:
+                    type: string
+                    example: '1f22f0'
+                  repoData:
+                    type: object
+                    properties:
+                      id:
+                        type: number
+                        example: 871117434
+                      node_id:
+                        type: string
+                        example: 'R_kgDOM-wyeg'
+                      name:
+                        type: string
+                        example: 'deployka-test'
+                      full_name:
+                        type: string
+                        example: 'keysKuo/deployka-test'
+                      private:
+                        type: boolean
+                        example: false
+                      owner:
+                        type: object
+                      visibility:
+                        type: string
+                        example: 'public'
+                  repoUrl:
+                    type: string
+                    example: 'https://github.com/keysKuo/deployka-test.git'
+                  uploadDir:
+                    type: string
+                    example: '/var/www/deployka.cloud/build-scripts/dist/1f22f0'
+
+  /api/v1/deploy/build:
+    post:
+      summary: 'Build project from repository'
+      description: 'Download source code from S3 and try to build the project'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                uploadId:
+                  type: string
+                  description: "Unique Id of project"
+                  example: "w0eitk"
+                projectName:
+                  type: string
+                  description: 'Name of the project'
+                  example: 'deployka-test'
+                framework:
+                  type: string
+                  description: 'Framework that project used'
+                  example: 'NextJS'
+      responses:
+        '200':
+          description: 'Building project successfully'
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  subdomain:
+                    type: string
+                    example: 'deployka-test.deployka.cloud'
+  /users:
+    get:
+      summary: "Retrieve a list of users"
+      description: "Retrieve a list of users from the database."
+      responses:
+        '200':
+          description: "A list of users."
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  type: object
+                  properties:
+                    id:
+                      type: integer
+                      description: "The user ID."
+                      example: 1
+                    name:
+                      type: string
+                      description: "The user's name."
+                      example: "John Doe"

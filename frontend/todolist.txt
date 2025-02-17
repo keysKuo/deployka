@@ -1,0 +1,20 @@
+1. Login page
+    - Github authentication (✔️)
+    - Gitlab authentication
+    - BitBucket authentication
+2. Dashboard page
+    - List projects (✔️)
+    - Add new project ...
+    - Search projects
+    - Sort projects
+3. Upload page
+    - Import repository from available github repositories
+    - Import repository with url (✔️)
+4. Deploy page
+    - Project configuration (✔️)
+    - Start Deploy (✔️)
+5. Build logs page
+    - Asynchronous execution
+    - Streaming building logs
+6. Project state page
+    - Detail project states and information
