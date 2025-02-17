@@ -1,0 +1,10 @@
+{
+    "compilerOptions": {
+      "declaration": true,
+      "declarationMap": true,
+      "outDir": "dist",
+      "module": "CommonJS",
+      "target": "ES6"
+    },
+    "include": ["types/**/*.ts", "index.ts"]
+  }

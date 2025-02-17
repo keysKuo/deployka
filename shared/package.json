@@ -1,0 +1,13 @@
+{
+    "name": "shared-types",
+    "version": "1.0.0",
+    "main": "index.ts",
+    "types": "index.d.ts",
+    "scripts": {
+        "build": "tsc"
+    },
+    "devDependencies": {
+        "@types/mongoose": "^5.11.97",
+        "@types/node": "^22.13.4"
+    }
+}
