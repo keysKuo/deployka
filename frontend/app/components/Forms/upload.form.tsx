@@ -1,23 +1,24 @@
 'use client';
 
-import * as React from "react"
-
-import { Button } from "@/components/ui/button"
+import * as React from "react";
+import { Button } from "@/components/ui/button";
 import {
     Card,
     CardContent,
     CardFooter,
     CardHeader,
     CardTitle,
-} from "@/components/ui/card"
-import { Input } from "@/components/ui/input"
-import { Label } from "@/components/ui/label"
+} from "@/components/ui/card";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
 import { ReloadIcon } from "@radix-ui/react-icons";
 import GitHubIcon from "../Icons/github.icon";
 import { Session } from "next-auth";
 import { fetchRepos } from "@/services/fetch.repos";
 import { RepositoryData, UploadForm } from "shared-types";
 import { uploadRepository } from "@/services/upload.repo";
+import Link from "next/link";
+import { SearchInput } from "../Common/search.input";
 
 type UploadRepoFormProps = {
     handleChangeId: (id: string) => void,
@@ -25,13 +26,12 @@ type UploadRepoFormProps = {
     session: Session
 }
 
-
 export function UploadRepoForm({ handleChangeId, handleChangeRepoData, session }: UploadRepoFormProps) {
     const [uploadForm, setUploadForm] = React.useState<UploadForm>({ repoUrl: "" });
-    const [loading, setLoading] = React.useState(false);
-    const [uploadStatus, setUploadStatus] = React.useState("Checking repository...");
+    const [loading, setLoading] = React.useState<boolean>(false);
+    const [uploadStatus, setUploadStatus] = React.useState<string>("Checking repository...");
     const [repositories, setRepositories] = React.useState<RepositoryData[]>([]);
-    const [showAll, setShowAll] = React.useState(false);
+    const [showAll, setShowAll] = React.useState<boolean>(false);
 
     React.useEffect(() => {
         const fetchRepositories = async () => {
@@ -47,9 +47,10 @@ export function UploadRepoForm({ handleChangeId, handleChangeRepoData, session }
         setUploadForm({ ...uploadForm, [e.target.name]: e.target.value });
     }
 
-    const onUpload = async () => {
+    const onUpload = async (repoUrl?: string) => {
         setLoading(true);
-        const uploadData = await uploadRepository(uploadForm);
+
+        const uploadData = await uploadRepository(repoUrl ? { ...uploadForm, repoUrl } : uploadForm);
         if (uploadData) {
             setUploadStatus("Preparing project...");
             setTimeout(() => {
@@ -78,29 +79,29 @@ export function UploadRepoForm({ handleChangeId, handleChangeRepoData, session }
                             <CardContent>
                                 <div className="flex flex-col items-center justify-center gap-3">
                                     <div className="w-full flex items-center justify-between gap-3">
-                                        <div className="w-[50%] p-2 border-2 border-gray-400 rounded-md">keyKuo</div>
-                                        <div className="w-[50%] p-2 border-2 border-gray-400 rounded-md">Search</div>
+
+                                        <SearchInput />
                                     </div>
 
-                                    <div className="w-full flex flex-col items-center justify-center gap-2">
-                                        {repositories.slice(0, showAll ? repositories.length : 3).map((repo, index) => (
-                                            <div key={index} className="w-full p-3 border-2 border-gray-400 flex items-center justify-between">
+                                    <div className="w-full flex flex-col items-center justify-center">
+                                        {repositories.sort((a,b) => new Date(b.updated_at).getTime() - new Date(a.updated_at).getTime()).slice(0, showAll ? repositories.length : 3).map((repo, index) => (
+                                            <div key={index} className="w-full p-3 border border-input bg-transparent flex items-center justify-between">
                                                 <div className="flex items-center justify-center gap-3">
                                                     <GitHubIcon />
-                                                    <span>{repo.name}</span>
+                                                    <span>{repo.full_name}</span>
                                                 </div>
-                                                <Button>Import</Button>
+                                                <Button type="button" onClick={() => onUpload(repo.clone_url)} className="hover:bg-[#71b190]">Import</Button>
                                             </div>
                                         ))}
 
                                         {repositories.length > 3 && (
-                                            <Button variant="outline" onClick={() => setShowAll(!showAll)}>
+                                            <Button className="mt-4" variant="outline" onClick={() => setShowAll(!showAll)}>
                                                 {showAll ? "Show Less" : "More"}
                                             </Button>
                                         )}
                                     </div>
 
-                                    <div>Missing git repository? Adjust Github App permissions</div>
+                                    <div className="text-sm">Missing git repository? <span className="text-blue-400 cursor-pointer">Adjust Github App permissions</span></div>
                                 </div>
                             </CardContent>
 
@@ -120,8 +121,8 @@ export function UploadRepoForm({ handleChangeId, handleChangeRepoData, session }
                                 </form>
                             </CardContent>
                             <CardFooter className="flex justify-between">
-                                <Button variant="outline">Cancel</Button>
-                                <Button type="button" onClick={onUpload} className="hover:bg-[#71b190]">Import</Button>
+                                <Link href="/dashboard"><Button variant="outline">Cancel</Button></Link>
+                                <Button type="button" onClick={() => onUpload()} className="hover:bg-[#71b190]">Import</Button>
                             </CardFooter>
                         </Card>
                     </section>

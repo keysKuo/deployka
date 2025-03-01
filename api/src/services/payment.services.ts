@@ -69,7 +69,7 @@ class PaymentService {
 			case 'stripe':
 				return await StripePayment.getInstance().createSession();
 			case 'paypal':
-				return await StripePayment.getInstance().createSession();
+				return await PaypalPayment.getInstance().createSession();
 			case 'momo':
 				return await StripePayment.getInstance().createSession();
 			case 'zalopay':

@@ -24,4 +24,4 @@
             - Download source code from S3 by uploadId
             - According to which framework project used -> Run to commands to build the project in server
             - Building module use websocket to realtime communicate with client (build log)
-            - 
+            

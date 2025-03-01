@@ -2,9 +2,19 @@
 @tailwind components;
 @tailwind utilities;
 
+@font-face {
+    font-family: 'Space Grotesk';
+    src: url('./fonts/SpaceGrotesk.ttf') format('ttf'),
+  }
+
+  @font-face {
+    font-family: 'Poppins';
+    src: url('./fonts/Poppins-Medium.ttf') format('ttf'),
+  }
+
 body {
   /* font-family:  Arial, Helvetica, sans-serif; */
-  font-family: 'Space Grotesk', 'Poppins';
+  font-family: 'Consolas', 'Space Grotesk', 'Poppins' !important;
 }
 
 @layer utilities {

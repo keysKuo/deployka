@@ -8,7 +8,7 @@
     - Search projects
     - Sort projects
 3. Upload page
-    - Import repository from available github repositories
+    - Import repository from available github repositories (✔️)
     - Import repository with url (✔️)
 4. Deploy page
     - Project configuration (✔️)
